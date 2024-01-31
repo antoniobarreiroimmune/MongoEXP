@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Buscar Serie</title>
+</head>
+
+<body>
+
+    <h2>Buscar serie</h2>
+    <form>
+        <input type="text" name="titulo" id="buscarTitulo">
+        <button type="button" onclick="buscar()">Buscar</button>
+    </form>
+
+    <div id="resultadoBusqueda"></div>
+
+
+
+    <h2>Añadir Nueva Serie</h2>
+    <form action="http://localhost:3000/api/nuevaSerie" method="post">
+        <label for="titulo">Título:</label>
+        <input type="text" id="titulo" name="titulo" required><br><br>
+
+        <label for="nota">Nota:</label>
+        <input type="number" id="nota" name="nota" step="0.1" required><br><br>
+
+        <label for="plataforma">Plataforma:</label>
+        <input type="text" id="plataforma" name="plataforma" required><br><br>
+
+        <input type="submit" value="Añadir Serie">
+    </form>
+    <script>
+        function buscar() {
+    fetch(`/api/${document.getElementById('buscarTitulo').value}`)
+        .then((res) => res.json())
+        .then((datos) => {
+            const contenedorResultados = document.getElementById('resultadoBusqueda');
+            contenedorResultados.innerHTML = ''; 
+
+            if (datos.results && datos.results.length > 0) {
+                datos.results.forEach((serie) => {
+                    const div = document.createElement('div');
+                    div.innerHTML = `Título: ${serie.titulo}, Nota: ${serie.nota}, Plataforma: ${serie.plataforma}`;
+                    contenedorResultados.appendChild(div);
+                });
+            } else {
+                contenedorResultados.innerHTML = 'No se encontraron resultados';
+            }
+        })
+        .catch((error) => {
+            console.error('Error al buscar la serie:', error);
+            document.getElementById('resultadoBusqueda').innerHTML = 'Error al buscar la serie';
+        });
+}
+
+    </script>
+</body>
+
+</html>

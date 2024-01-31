@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menús</title>
+</head>
+<body>
+    <h1>Lista de Menús</h1>
+    <ul id="lista-menus"></ul>
+
+    <script>
+        async function cargarMenus() {
+            try {
+                const respuesta = await fetch('/api/menus');
+                const datos = await respuesta.json();
+
+                if(datos.results && datos.results.length > 0) {
+                    const lista = document.getElementById('lista-menus');
+                    lista.innerHTML = ''; 
+
+                    datos.results.forEach(menu => {
+                        const elemento = document.createElement('li');
+                        elemento.innerHTML = `<strong>Menú Número:</strong> ${menu.Número_de_menú} <br>
+                                              <strong>Primer Plato:</strong> ${menu.Primer_plato} <br>
+                                              <strong>Segundo Plato:</strong> ${menu.Segundo_plato} <br>
+                                              <strong>Postre:</strong> ${menu.Postre} <br>
+                                              <strong>Precio:</strong> ${menu.Precio}€
+                                              <button onclick="borrarMenu(${menu.Número_de_menú})">Borrar Menú</button>`;
+                        lista.appendChild(elemento);
+                    });
+                } else {
+                    console.log('No se encontraron menús');
+                }
+            } catch (error) {
+                console.error('Error al cargar los menús:', error);
+            }
+        }
+
+        async function borrarMenu(numeroMenu) {
+            try {
+                const respuesta = await fetch(`/api/borrarMenu/${numeroMenu}`, {
+                    method: 'DELETE',
+                });
+                const datos = await respuesta.json();
+                console.log(datos);
+
+                cargarMenus();
+            } catch (error) {
+                console.error('Error al borrar el menú:', error);
+            }
+        }
+
+        window.onload = () => {
+            cargarMenus();
+        };
+    </script>
+</body>
+</html>
+

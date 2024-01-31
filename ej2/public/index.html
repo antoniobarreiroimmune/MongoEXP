@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>bibliopteca</title>
+
+</head>
+<body>
+<div id="alert"></div>
+<div id="lista"></div>
+<script>
+    fetch('api/libros')
+    .then((res)=>res.json())
+    .then((datos)=>{ 
+        let salida = ""
+        datos.results.forEach(libro => {
+           salida += `<li>${libro.titulo} <span>${libro.leido ? "Leido":"No leido"}</span> <button type="button" onclick="leer('${libro.titulo}')">Leer</button> <button type="button" onclick="borrar('${libro.titulo}')">Borrar</button></li>`
+        });
+
+        document.getElementById('lista').innerHTML = `<ul>${salida}</ul>` 
+    })
+
+    function leer(titulo){
+        fetch(`/api/editarLibro/${titulo}`, {
+            method:"PUT",
+
+        })
+        .then((res) => res.json())
+        .then((datos) => {
+            console.log(datos)
+            document.getElementById('alert').innerHTML = `<h2>${datos.mensaje}</h2>`
+        })
+    }
+
+     function borrar(titulo) {
+            fetch(`/api/borrarLibro/${titulo}`, {
+                method: "DELETE",
+
+            })
+                .then((res) => res.json())
+                .then((datos) => {
+                    console.log(datos)
+                    document.getElementById('alert').innerHTML = `<h2>${datos.mensaje}</h2>`
+                })
+        }
+</script>
+</body>
+</html>
